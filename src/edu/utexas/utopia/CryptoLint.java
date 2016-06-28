@@ -124,7 +124,7 @@ public class CryptoLint {
 	private static int sysTimeout = -1;
 	
 	private static boolean aggressiveTaintWrapper = false;
-	private static boolean noTaintWrapper = false;
+	private static boolean noTaintWrapper = true;
 	private static String summaryPath = "";
 	private static String resultFilePath = "";
 	
@@ -572,88 +572,88 @@ public class CryptoLint {
 	}
 
 	private static InfoflowResults runAnalysis(final String fileName, final String androidJar) {
-//		try {
-//			final long beforeRun = System.nanoTime();
-//
-//			final SetupApplication app;
-//			if (null == ipcManager)
-//			{
-//				app = new SetupApplication(androidJar, fileName);
-//			}
-//			else
-//			{
-//				app = new SetupApplication(androidJar, fileName, ipcManager);
-//			}
-//			
-//			// Set configuration object
-//			app.setConfig(config);
-//			if (noTaintWrapper)
-//				app.setSootConfig(new IInfoflowConfig() {
-//					
-//					@Override
-//					public void setSootOptions(Options options) {
-//						options.set_include_all(true);
-//					}
-//					
-//				});
-//			
-//			final ITaintPropagationWrapper taintWrapper;
-//			if (noTaintWrapper)
-//				taintWrapper = null;
-//			else if (summaryPath != null && !summaryPath.isEmpty()) {
-//				System.out.println("Using the StubDroid taint wrapper");
-//				taintWrapper = createLibrarySummaryTW();
-//				if (taintWrapper == null) {
-//					System.err.println("Could not initialize StubDroid");
-//					return null;
-//				}
-//			}
-//			else {
-//				final EasyTaintWrapper easyTaintWrapper;
-//				if (new File("../soot-infoflow/EasyTaintWrapperSource.txt").exists())
-//					easyTaintWrapper = new EasyTaintWrapper("../soot-infoflow/EasyTaintWrapperSource.txt");
-//				else
-//					easyTaintWrapper = new EasyTaintWrapper("EasyTaintWrapperSource.txt");
-//				easyTaintWrapper.setAggressiveMode(aggressiveTaintWrapper);
-//				taintWrapper = easyTaintWrapper;
-//			}
-//			app.setTaintWrapper(taintWrapper);
-//			app.calculateSourcesSinksEntrypoints("SourcesAndSinks.txt");
-//			
-//			if (DEBUG) {
-//				app.printEntrypoints();
-//				app.printSinks();
-//				app.printSources();
-//			}
-//			
-//			System.out.println("Running data flow analysis...");
-//			final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
-//			System.out.println("Analysis has run for " + (System.nanoTime() - beforeRun) / 1E9 + " seconds");
-//			
-//			if (config.getLogSourcesAndSinks()) {
-//				if (!app.getCollectedSources().isEmpty()) {
-//					System.out.println("Collected sources:");
-//					for (Stmt s : app.getCollectedSources())
-//						System.out.println("\t" + s);
-//				}
-//				if (!app.getCollectedSinks().isEmpty()) {
-//					System.out.println("Collected sinks:");
-//					for (Stmt s : app.getCollectedSinks())
-//						System.out.println("\t" + s);
-//				}
-//			}
+		try {
+			final long beforeRun = System.nanoTime();
+
+			final SetupApplication app;
+			if (null == ipcManager)
+			{
+				app = new SetupApplication(androidJar, fileName);
+			}
+			else
+			{
+				app = new SetupApplication(androidJar, fileName, ipcManager);
+			}
+			
+			// Set configuration object
+			app.setConfig(config);
+			if (noTaintWrapper)
+				app.setSootConfig(new IInfoflowConfig() {
+					
+					@Override
+					public void setSootOptions(Options options) {
+						options.set_include_all(true);
+					}
+					
+				});
+			
+			final ITaintPropagationWrapper taintWrapper;
+			if (noTaintWrapper)
+				taintWrapper = null;
+			else if (summaryPath != null && !summaryPath.isEmpty()) {
+				System.out.println("Using the StubDroid taint wrapper");
+				taintWrapper = createLibrarySummaryTW();
+				if (taintWrapper == null) {
+					System.err.println("Could not initialize StubDroid");
+					return null;
+				}
+			}
+			else {
+				final EasyTaintWrapper easyTaintWrapper;
+				if (new File("../soot-infoflow/EasyTaintWrapperSource.txt").exists())
+					easyTaintWrapper = new EasyTaintWrapper("../soot-infoflow/EasyTaintWrapperSource.txt");
+				else
+					easyTaintWrapper = new EasyTaintWrapper("EasyTaintWrapperSource.txt");
+				easyTaintWrapper.setAggressiveMode(aggressiveTaintWrapper);
+				taintWrapper = easyTaintWrapper;
+			}
+			app.setTaintWrapper(taintWrapper);
+			app.calculateSourcesSinksEntrypoints("SourcesAndSinks.txt");
+			
+			if (DEBUG) {
+				app.printEntrypoints();
+				app.printSinks();
+				app.printSources();
+			}
+			
+			System.out.println("Running data flow analysis...");
+			final InfoflowResults res = app.runInfoflow(new MyResultsAvailableHandler());
+			System.out.println("Analysis has run for " + (System.nanoTime() - beforeRun) / 1E9 + " seconds");
+			
+			if (config.getLogSourcesAndSinks()) {
+				if (!app.getCollectedSources().isEmpty()) {
+					System.out.println("Collected sources:");
+					for (Stmt s : app.getCollectedSources())
+						System.out.println("\t" + s);
+				}
+				if (!app.getCollectedSinks().isEmpty()) {
+					System.out.println("Collected sinks:");
+					for (Stmt s : app.getCollectedSinks())
+						System.out.println("\t" + s);
+				}
+			}
 			
 			checkCrypto(fileName);
-			return null;
-//		} catch (IOException ex) {
-//			System.err.println("Could not read file: " + ex.getMessage());
-//			ex.printStackTrace();
-//			throw new RuntimeException(ex);
-//		} catch (XmlPullParserException ex) {
-//			System.err.println("Could not read Android manifest file: " + ex.getMessage());
-//			ex.printStackTrace();
-//			throw new RuntimeException(ex);
-//		}
+			return res;
+		} catch (IOException ex) {
+			System.err.println("Could not read file: " + ex.getMessage());
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		} catch (XmlPullParserException ex) {
+			System.err.println("Could not read Android manifest file: " + ex.getMessage());
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
 	}
 	
 	private static void checkCrypto(String fileName) {
