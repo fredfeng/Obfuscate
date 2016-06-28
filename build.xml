@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="apposcopy" default="jar">
+
+  <dirname property="this.dir" file="${ant.file}"/>
+  <property name="target.loc" location="${target}"/>
+
+  <target name="main" depends="jar">
+	<java classname="edu.utexas.utopia.Main"
+          maxmemory="4g"
+          fork="true"
+          failonerror="true">
+	      <jvmarg value="-ea" />
+      <classpath>
+    	<pathelement location="obfucate.jar"/>
+    	<pathelement location="lib/axml-2.0.jar"/>
+    	<pathelement location="lib/slf4j-api-1.7.5.jar"/>
+    	<pathelement location="lib/slf4j-simple-1.7.5.jar"/>
+    	<pathelement location="lib/soot-infoflow-android.jar"/>
+    	<pathelement location="lib/soot-infoflow.jar"/>
+    	<pathelement location="lib/soot-trunk.jar"/>
+      </classpath>
+      <arg value="${apk}"/>
+      <arg value="${sdk}"/>
+	</java>
+  </target>
+
+  <target name="init">
+    <mkdir dir="classes"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <javac srcdir="src" destdir="classes" debug="true">
+      <classpath>
+    	<pathelement location="lib/axml-2.0.jar"/>
+    	<pathelement location="lib/slf4j-api-1.7.5.jar"/>
+    	<pathelement location="lib/slf4j-simple-1.7.5.jar"/>
+    	<pathelement location="lib/soot-infoflow-android.jar"/>
+    	<pathelement location="lib/soot-infoflow.jar"/>
+    	<pathelement location="lib/soot-trunk.jar"/>
+      </classpath>
+	</javac>
+  </target>
+
+  <target name="jar" depends="compile"
+        description="generate the distribution" >
+    <jar jarfile="obfucate.jar" basedir="classes"/>
+  </target>
+
+  <target name="clean"
+		  description="clean up" >
+    <delete dir="classes"/>
+    <delete file="obfucate.jar"/>
+  </target>
+
+</project>
