@@ -24,6 +24,27 @@
 	</java>
   </target>
 
+  <target name="crypto" depends="jar">
+	<java classname="edu.utexas.utopia.CryptoLint"
+          maxmemory="4g"
+          fork="true"
+          failonerror="true">
+	      <jvmarg value="-ea" />
+      <classpath>
+    	<pathelement location="obfucate.jar"/>
+    	<pathelement location="lib/axml-2.0.jar"/>
+    	<pathelement location="lib/slf4j-api-1.7.5.jar"/>
+    	<pathelement location="lib/slf4j-simple-1.7.5.jar"/>
+    	<pathelement location="lib/soot-infoflow-android.jar"/>
+    	<pathelement location="lib/soot-infoflow.jar"/>
+    	<pathelement location="lib/soot-trunk.jar"/>
+      </classpath>
+      <arg value="${apk}"/>
+      <arg value="${sdk}"/>
+	</java>
+  </target>
+
+
   <target name="init">
     <mkdir dir="classes"/>
   </target>
