@@ -28,6 +28,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.MethodOrMethodContext;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
@@ -144,7 +145,10 @@ public class Main {
 	 * @param args Program arguments. args[0] = path to apk-file,
 	 * args[1] = path to android-dir (path/android-platforms/)
 	 */
-	public static void main(final String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException, InterruptedException {
+		args = new String[2];
+		args[0] = "/home/yu/research/benchmarks/malware/drebin-paper/FakeInstaller/88faf677ea6f499065be85156eab6b6fb4d9c6b2c091b5b02d112184523f604f.apk";
+		args[1] = "/home/yu/libs/android-sdk-linux/platforms/";
 		if (args.length < 2) {
 			printUsage();	
 			return;
@@ -584,7 +588,6 @@ public class Main {
 			{
 				app = new SetupApplication(androidJar, fileName, ipcManager);
 			}
-			
 			// Set configuration object
 			app.setConfig(config);
 			if (noTaintWrapper)
@@ -662,7 +665,7 @@ public class Main {
 			SootMethod meth = (SootMethod) qr.next();
 			if(!meth.isJavaLibraryMethod() && meth.hasActiveBody()) {
 				String body = meth.getActiveBody().toString();
-				if(body.contains("forName"))
+				if(body.contains("forName") || body.contains("java.lang.reflect"))
 					System.out.println("reflection body:----------------" + meth.getActiveBody());
 			}
 		}
