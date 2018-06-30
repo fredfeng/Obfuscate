@@ -154,7 +154,8 @@ public class Main {
 			SootMethod meth = (SootMethod) qr.next();
 			if (!meth.isJavaLibraryMethod() && meth.hasActiveBody()) {
 				String body = meth.getActiveBody().toString();
-				if (body.contains("forName") || body.contains("java.lang.reflect")) {
+				//if (body.contains("forName") || body.contains("java.lang.reflect")) {
+				if (body.contains("forName") && body.contains("getMethod")) {
 					System.out.println("Suspicious reflect app: " + fileName);
 					System.out.println("reflection body:----------------" + meth.getActiveBody());
 				}
